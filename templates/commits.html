@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Commits par minute</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  </head>
+  <body>
+    <h2>Nombre de commits par minute</h2>
+    <div id="chart_div"></div>
+    <script>
+      google.charts.load('current', { packages: ['corechart'] });
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        // Données injectées par Flask
+        const dataFromServer = {{ data|tojson }};
+
+        // Convertir les données en un tableau utilisable par Google Charts
+        const dataTable = new google.visualization.DataTable();
+        dataTable.addColumn('string', 'Minute');
+        dataTable.addColumn('number', 'Nombre de Commits');
+
+        dataFromServer.forEach(entry => {
+          dataTable.addRow([entry.minute, entry.count]);
+        });
+
+        // Options du graphique
+        const options = {
+          title: 'Activité des commits minute par minute',
+          hAxis: { title: 'Minute' },
+          vAxis: { title: 'Nombre de commits' },
+          legend: 'none',
+          bar: { groupWidth: '75%' }
+        };
+
+        // Dessiner le graphique
+        const chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(dataTable, options);
+      }
+    </script>
+  </body>
+</html>
